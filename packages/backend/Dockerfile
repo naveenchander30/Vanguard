@@ -24,5 +24,7 @@ COPY --from=builder /app/packages/backend/package.json ./package.json
 COPY --from=builder /app/packages/backend/node_modules/.prisma ./node_modules/.prisma
 COPY --from=builder /app/node_modules ./node_modules
 
-EXPOSE 3000
+RUN npx prisma generate
+
+EXPOSE 3001
 CMD ["node", "dist/index.js"]
