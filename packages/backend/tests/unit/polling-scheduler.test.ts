@@ -28,10 +28,6 @@ describe('Polling Scheduler', () => {
       snmpIntervalMs: 5000,
       kismetPoller: kismetPoll,
       storeTelemetry: store,
-      configs: {
-        kismetUrl: 'http://localhost:2501',
-        snmpRouters: [],
-      },
     });
 
     await scheduler.start();
@@ -68,10 +64,6 @@ describe('Polling Scheduler', () => {
       snmpPoller: snmpPoll,
       routerConfigs: [routerConfig],
       storeTelemetry: store,
-      configs: {
-        kismetUrl: 'http://localhost:2501',
-        snmpRouters: [],
-      },
     });
 
     await scheduler.start();
@@ -103,10 +95,6 @@ describe('Polling Scheduler', () => {
       snmpIntervalMs: 5000,
       kismetPoller: kismetPoll,
       storeTelemetry: store,
-      configs: {
-        kismetUrl: 'http://localhost:2501',
-        snmpRouters: [],
-      },
     });
 
     await scheduler.start();
@@ -124,10 +112,6 @@ describe('Polling Scheduler', () => {
       snmpIntervalMs: 5000,
       kismetPoller: kismetPoll,
       storeTelemetry: store,
-      configs: {
-        kismetUrl: 'http://localhost:2501',
-        snmpRouters: [],
-      },
     });
 
     await expect(scheduler.start()).resolves.toBeUndefined();
@@ -153,10 +137,6 @@ describe('Polling Scheduler', () => {
       snmpIntervalMs: 1000,
       kismetPoller: kismetPoll,
       storeTelemetry: store,
-      configs: {
-        kismetUrl: 'http://localhost:2501',
-        snmpRouters: [],
-      },
     });
 
     await scheduler.start();
@@ -186,10 +166,6 @@ describe('Polling Scheduler', () => {
       snmpPoller: snmpPoll,
       routerConfigs,
       storeTelemetry: store,
-      configs: {
-        kismetUrl: 'http://localhost:2501',
-        snmpRouters: [],
-      },
     });
 
     await scheduler.start();

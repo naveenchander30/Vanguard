@@ -70,3 +70,10 @@ SNMP (UDP 161) ──> Router Poller ──────────────�
 - Kismet API returns huge payloads — always filter for `type: "Wi-Fi AP"` early
 - SNMP OIDs differ by router vendor — use configurable OID mappings
 - SQLite concurrent writes during active polling may need WAL mode
+
+## Known Limitations
+
+## Security Notes
+- All API endpoints are currently unauthenticated by design for a self-hosted tool on a trusted network
+- CORS is configured with `origin: true` which allows any origin — restrict this in production
+- Deploy behind a reverse proxy with authentication for production use on untrusted networks

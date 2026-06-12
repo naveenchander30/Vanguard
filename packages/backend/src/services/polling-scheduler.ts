@@ -8,10 +8,6 @@ export interface SchedulerConfig {
   snmpPoller?: (config: RouterConfig) => Promise<SnmpPollResult>;
   routerConfigs?: RouterConfig[];
   storeTelemetry: (entries: ParsedTelemetry[]) => Promise<void>;
-  configs: {
-    kismetUrl: string;
-    snmpRouters: string[];
-  };
 }
 
 export interface PollingScheduler {

@@ -9,6 +9,7 @@ export interface KismetDevice {
     'kismet.common.signal.last_signal'?: number;
     'kismet.common.signal.min_signal'?: number;
     'kismet.common.signal.max_signal'?: number;
+    'kismet.common.signal.last_noise_floor'?: number;
   };
   'kismet.device.base.packets.tx_total'?: number;
   'kismet.device.base.packets.rx_total'?: number;
@@ -72,6 +73,7 @@ export function parseKismetDevices(devices: KismetDevice[]): ParsedTelemetry[] {
         maxSignalDb: signal?.['kismet.common.signal.max_signal'],
         channelUtilization: beaconed?.['dot11.advertisedssid.dot11e_channel_utilization_perc'],
         clientCount: beaconed?.['dot11.advertisedssid.dot11e_qbss_stations'],
+        noiseFloor: signal?.['kismet.common.signal.last_noise_floor'],
         txPackets: device['kismet.device.base.packets.tx_total'],
         rxPackets: device['kismet.device.base.packets.rx_total'],
         source: 'kismet',

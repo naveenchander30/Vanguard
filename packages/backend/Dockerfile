@@ -24,7 +24,5 @@ COPY --from=builder /app/packages/backend/package.json ./package.json
 COPY --from=builder /app/packages/backend/node_modules/.prisma ./node_modules/.prisma
 COPY --from=builder /app/node_modules ./node_modules
 
-RUN pnpm --filter @spectrum/backend prisma generate
-
 EXPOSE 3000
 CMD ["node", "dist/index.js"]

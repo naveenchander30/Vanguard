@@ -49,9 +49,11 @@ export async function infrastructureRoutes(app: FastifyInstance): Promise<void> 
 
   app.get('/:id', async (request: FastifyRequest, reply: FastifyReply) => {
     const { id } = request.params as { id: string };
+    const intId = parseInt(id, 10);
+    if (isNaN(intId)) return reply.status(400).send({ error: 'Invalid id parameter' });
     const prisma = getPrisma();
     const entry = await prisma.knownInfrastructure.findUnique({
-      where: { id: parseInt(id, 10) },
+      where: { id: intId },
     });
 
     if (!entry) {
@@ -62,6 +64,8 @@ export async function infrastructureRoutes(app: FastifyInstance): Promise<void> 
 
   app.put('/:id', async (request: FastifyRequest, reply: FastifyReply) => {
     const { id } = request.params as { id: string };
+    const intId = parseInt(id, 10);
+    if (isNaN(intId)) return reply.status(400).send({ error: 'Invalid id parameter' });
     const parsed = updateSchema.safeParse(request.body);
     if (!parsed.success) {
       return reply.status(400).send({ error: 'Validation failed', details: parsed.error.issues });
@@ -70,7 +74,7 @@ export async function infrastructureRoutes(app: FastifyInstance): Promise<void> 
     const prisma = getPrisma();
     try {
       const entry = await prisma.knownInfrastructure.update({
-        where: { id: parseInt(id, 10) },
+        where: { id: intId },
         data: parsed.data,
       });
       return reply.send(entry);
@@ -84,10 +88,12 @@ export async function infrastructureRoutes(app: FastifyInstance): Promise<void> 
 
   app.delete('/:id', async (request: FastifyRequest, reply: FastifyReply) => {
     const { id } = request.params as { id: string };
+    const intId = parseInt(id, 10);
+    if (isNaN(intId)) return reply.status(400).send({ error: 'Invalid id parameter' });
     const prisma = getPrisma();
     try {
       await prisma.knownInfrastructure.delete({
-        where: { id: parseInt(id, 10) },
+        where: { id: intId },
       });
       return reply.status(204).send();
     } catch (err: unknown) {
