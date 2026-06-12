@@ -88,7 +88,7 @@ describe('Hybrid Client Poller', () => {
     expect(results[1].clients).toHaveLength(0);
   });
 
-  it('should use SNMP when AP supports it and transport is provided', async () => {
+  it('should use SNMP when AP supports it and transport factory is provided', async () => {
     const snmpTransport = {
       get: vi.fn().mockResolvedValue([{ oid: '.1.3.6.1.2.1.2.2.1.10.1', value: 5 }]),
       close: vi.fn(),
@@ -98,7 +98,7 @@ describe('Hybrid Client Poller', () => {
       { bssid: 'AA:BB:CC:DD:EE:01', label: 'AP-SNMP', ipAddress: '192.168.1.1', supportsSnmp: true, snmpOid: '.1.3.6.1.2.1.2.2.1.10.1', snmpCommunity: 'public' },
     ];
 
-    const results = await pollClientLoads(snmpAps, { kismetUrl: 'http://kismet:2501', snmpTransport });
+    const results = await pollClientLoads(snmpAps, { kismetUrl: 'http://kismet:2501', createSnmpTransport: () => snmpTransport });
 
     expect(results).toHaveLength(1);
     expect(results[0]).toMatchObject({
@@ -124,7 +124,7 @@ describe('Hybrid Client Poller', () => {
       { bssid: 'AA:BB:CC:DD:EE:01', label: 'AP-Fallback', ipAddress: '192.168.1.1', supportsSnmp: true, snmpOid: '.1.3.6.1.2.1.2.2.1.10.1', snmpCommunity: 'public' },
     ];
 
-    const results = await pollClientLoads(snmpAps, { kismetUrl: 'http://kismet:2501', snmpTransport });
+    const results = await pollClientLoads(snmpAps, { kismetUrl: 'http://kismet:2501', createSnmpTransport: () => snmpTransport });
 
     expect(results).toHaveLength(1);
     expect(results[0]).toMatchObject({
@@ -159,7 +159,7 @@ describe('Hybrid Client Poller', () => {
       { bssid: 'AA:BB:CC:DD:EE:02', label: 'AP-2', ipAddress: '192.168.1.2', supportsSnmp: true, snmpOid: '.1.3.6.1.2.1.2.2.1.10.2', snmpCommunity: 'public' },
     ];
 
-    await pollClientLoads(snmpAps, { kismetUrl: 'http://kismet:2501', snmpTransport });
+    await pollClientLoads(snmpAps, { kismetUrl: 'http://kismet:2501', createSnmpTransport: () => snmpTransport });
 
     expect(fetch).not.toHaveBeenCalled();
   });

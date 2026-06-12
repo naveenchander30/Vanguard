@@ -1,6 +1,6 @@
 import { buildApp } from './app.js';
 import { getPrisma, closePrisma } from './db/prisma.js';
-import { createSnmpPoller, type SnmpTransport } from './services/snmp-poller.js';
+import { createSnmpSession } from './services/snmp-transport.js';
 import { createPollingScheduler } from './services/polling-scheduler.js';
 import { createKismetPoller } from './services/kismet-poller.js';
 import { pollClientLoads } from './services/hybrid-client-poller.js';
@@ -21,15 +21,11 @@ async function main() {
 
   const kismetPoller = createKismetPoller(kismetUrl);
 
-  const snmpTransport: SnmpTransport | undefined = undefined;
-  const snmpPoller = snmpTransport ? createSnmpPoller(snmpTransport) : undefined;
-
   scheduler = createPollingScheduler({
     kismetIntervalMs: 30_000,
     snmpIntervalMs: 60_000,
     hybridIntervalMs: 15_000,
     kismetPoller,
-    snmpPoller: snmpPoller?.pollOnce,
     routerConfigs: [],
     hybridPoller: async () => {
       const aps = await prisma.knownInfrastructure.findMany();
@@ -42,7 +38,7 @@ async function main() {
           snmpOid: ap.snmpOid,
           snmpCommunity: ap.snmpCommunity,
         })),
-        { kismetUrl, snmpTransport },
+        { kismetUrl, createSnmpTransport: createSnmpSession },
       );
       return reports.map((r) => ({
         bssid: r.bssid,

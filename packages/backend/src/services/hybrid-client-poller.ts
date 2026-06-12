@@ -75,23 +75,11 @@ function getAssociatedClients(
     }));
 }
 
-async function pollSnmpClientCount(
-  transport: SnmpTransport,
-  ip: string,
-  community: string,
-  oid: string,
-): Promise<number> {
-  const varbinds = await transport.get([oid]);
-  const val = varbinds.find((v) => v.oid === oid)?.value;
-  if (typeof val === 'number') return val;
-  throw new Error(`SNMP returned non-numeric value for ${oid}: ${val}`);
-}
-
 export async function pollClientLoads(
   aps: ApConfig[],
   options: {
     kismetUrl: string;
-    snmpTransport?: SnmpTransport;
+    createSnmpTransport?: (host: string, community: string) => SnmpTransport;
   },
 ): Promise<ClientLoadReport[]> {
   const needsKismet = aps.some((ap) => !ap.supportsSnmp || ap.snmpOid == null);
@@ -108,23 +96,25 @@ export async function pollClientLoads(
   const results: ClientLoadReport[] = [];
 
   for (const ap of aps) {
-    if (ap.supportsSnmp && ap.snmpOid && ap.ipAddress && options.snmpTransport) {
+    if (ap.supportsSnmp && ap.snmpOid && ap.ipAddress && options.createSnmpTransport) {
+      const transport = options.createSnmpTransport(ap.ipAddress, ap.snmpCommunity || 'public');
       try {
-        const count = await pollSnmpClientCount(
-          options.snmpTransport,
-          ap.ipAddress,
-          ap.snmpCommunity || 'public',
-          ap.snmpOid,
-        );
-        results.push({
-          bssid: ap.bssid,
-          name: ap.label,
-          activeClientCount: count,
-          source: 'snmp',
-          clients: [],
-        });
-        continue;
+        const varbinds = await transport.get([ap.snmpOid]);
+        const val = varbinds.find((v) => v.oid === ap.snmpOid)?.value;
+        if (typeof val === 'number') {
+          results.push({
+            bssid: ap.bssid,
+            name: ap.label,
+            activeClientCount: val,
+            source: 'snmp',
+            clients: [],
+          });
+          await transport.close();
+          continue;
+        }
+        await transport.close();
       } catch (err) {
+        await transport.close();
         console.error(`SNMP poll failed for ${ap.label}, falling back to Kismet:`, err);
       }
     }
