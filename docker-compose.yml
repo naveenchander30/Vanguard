@@ -1,6 +1,7 @@
 services:
   kismet:
     image: kismet/kismet:latest
+    profiles: [full]
     network_mode: host
     privileged: true
     volumes:
@@ -18,9 +19,6 @@ services:
       - KISMET_URL=http://localhost:2501
     volumes:
       - backend_data:/data
-    depends_on:
-      kismet:
-        condition: service_started
     restart: unless-stopped
 
   frontend:
@@ -29,6 +27,8 @@ services:
       dockerfile: packages/frontend/Dockerfile
     ports:
       - "80:80"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     depends_on:
       - backend
     restart: unless-stopped

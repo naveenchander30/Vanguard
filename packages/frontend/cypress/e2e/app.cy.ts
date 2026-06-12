@@ -56,7 +56,7 @@ describe('Spectrum Audit App', () => {
     cy.get('input[placeholder*="BSSID"]').type('AA:BB:CC:DD:EE:FF');
     cy.get('input[placeholder="SSID"]').type('Office');
     cy.get('input[placeholder*="Band"]').type('5GHz');
-    cy.contains('Add').click();
+    cy.contains('button', 'Add').click();
     cy.wait('@createInfrastructure');
     cy.contains('AA:BB:CC:DD:EE:FF').should('exist');
   });

@@ -1,7 +1,7 @@
 FROM node:22-alpine AS builder
 WORKDIR /app
 
-RUN corepack enable
+RUN npm install -g pnpm@10
 
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 
@@ -11,20 +11,14 @@ COPY packages/backend/prisma/ ./packages/backend/prisma/
 RUN pnpm install --frozen-lockfile
 
 COPY packages/backend/ ./packages/backend/
+RUN pnpm --filter @spectrum/backend exec prisma generate
 RUN pnpm --filter @spectrum/backend run build
 
 FROM node:22-alpine
-WORKDIR /app
-
 RUN corepack enable
 
-COPY --from=builder /app/packages/backend/dist ./dist
-COPY --from=builder /app/packages/backend/prisma ./prisma
-COPY --from=builder /app/packages/backend/package.json ./package.json
-COPY --from=builder /app/packages/backend/node_modules/.prisma ./node_modules/.prisma
-COPY --from=builder /app/node_modules ./node_modules
-
-RUN npx prisma generate
+COPY --from=builder /app /app
+WORKDIR /app/packages/backend
 
 EXPOSE 3001
-CMD ["node", "dist/index.js"]
+CMD ["sh", "-c", "node_modules/.bin/prisma db push --accept-data-loss && node dist/index.js"]

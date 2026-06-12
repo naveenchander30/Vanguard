@@ -3,7 +3,7 @@ WORKDIR /app
 
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY packages/frontend/package.json ./packages/frontend/
-RUN corepack enable && pnpm install --frozen-lockfile
+RUN npm install -g pnpm@10 && pnpm install --frozen-lockfile
 
 COPY packages/frontend/ ./packages/frontend/
 RUN pnpm --filter @spectrum/frontend build
