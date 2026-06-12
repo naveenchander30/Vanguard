@@ -1,0 +1,55 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model KnownInfrastructure {
+  id        Int      @id @default(autoincrement())
+  bssid     String   @unique
+  ssid      String?
+  label     String?
+  band      String?
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model TelemetryLog {
+  id                 Int      @id @default(autoincrement())
+  bssid              String
+  ssid               String?
+  band               String?
+  channel            String?
+  channelNum         Int?
+  frequency          Int?
+  signalDb           Float?
+  minSignalDb        Float?
+  maxSignalDb        Float?
+  clientCount        Int?
+  channelUtilization Float?
+  noiseFloor         Float?
+  retryRate          Float?
+  txPackets          Int?
+  rxPackets          Int?
+  source             String
+  createdAt          DateTime @default(now())
+
+  @@index([bssid, createdAt])
+  @@index([createdAt])
+}
+
+model CongestionScore {
+  id        Int      @id @default(autoincrement())
+  channel   Int
+  band      String
+  score     Int
+  breakdown String?
+  createdAt DateTime @default(now())
+
+  @@unique([channel, band, createdAt])
+  @@index([createdAt])
+}
