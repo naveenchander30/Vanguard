@@ -16,6 +16,10 @@ export interface Infrastructure {
   label: string | null;
   band: string | null;
   notes: string | null;
+  ipAddress: string | null;
+  supportsSnmp: boolean;
+  snmpOid: string | null;
+  snmpCommunity: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -32,6 +36,14 @@ export interface TelemetryEntry {
   noiseFloor: number | null;
   source: string;
   createdAt: string;
+}
+
+export interface ClientLoad {
+  bssid: string;
+  ssid: string;
+  activeClientCount: number;
+  source: string;
+  lastSeen: string;
 }
 
 export async function fetchScores(): Promise<CongestionScore[]> {
@@ -85,18 +97,51 @@ export function scoresStreamUrl(): string {
   return `${BASE}/scores/stream`;
 }
 
-export function subscribeScores(onScore: (score: CongestionScore[]) => void): () => void {
-  const eventSource = new EventSource(scoresStreamUrl());
-  eventSource.onmessage = (event) => {
-    try {
-      const data = JSON.parse(event.data);
-      onScore(data);
-    } catch {
-      // ignore parse errors
-    }
+export function clientsStreamUrl(): string {
+  return `${BASE}/clients/stream`;
+}
+
+export async function fetchClients(): Promise<ClientLoad[]> {
+  const res = await fetch(`${BASE}/clients`);
+  if (!res.ok) throw new Error('Failed to fetch clients');
+  return res.json();
+}
+
+function subscribe<T>(url: string, onData: (data: T) => void, retryMs = 3000): () => void {
+  let closed = false;
+  let retryTimeout: ReturnType<typeof setTimeout>;
+
+  function connect() {
+    if (closed) return;
+    const eventSource = new EventSource(url);
+    eventSource.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        onData(data);
+      } catch {
+        // ignore parse errors
+      }
+    };
+    eventSource.onerror = () => {
+      eventSource.close();
+      if (!closed) {
+        retryTimeout = setTimeout(connect, retryMs);
+      }
+    };
+  }
+
+  connect();
+
+  return () => {
+    closed = true;
+    clearTimeout(retryTimeout);
   };
-  eventSource.onerror = () => {
-    eventSource.close();
-  };
-  return () => eventSource.close();
+}
+
+export function subscribeScores(onScore: (scores: CongestionScore[]) => void): () => void {
+  return subscribe(scoresStreamUrl(), onScore);
+}
+
+export function subscribeClients(onClients: (clients: ClientLoad[]) => void): () => void {
+  return subscribe(clientsStreamUrl(), onClients);
 }

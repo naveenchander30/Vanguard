@@ -9,6 +9,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <li><NavLink to="/" end className={({ isActive }) => isActive ? 'active' : ''}>Dashboard</NavLink></li>
           <li><NavLink to="/infrastructure" className={({ isActive }) => isActive ? 'active' : ''}>Infrastructure</NavLink></li>
           <li><NavLink to="/telemetry" className={({ isActive }) => isActive ? 'active' : ''}>Telemetry</NavLink></li>
+          <li><NavLink to="/clients" className={({ isActive }) => isActive ? 'active' : ''}>Clients</NavLink></li>
         </ul>
       </nav>
       <main className="main">{children}</main>

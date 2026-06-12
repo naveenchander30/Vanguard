@@ -287,3 +287,56 @@ th {
 .actions-cell .btn {
   white-space: nowrap;
 }
+
+/* Clients Grid */
+.clients-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+.client-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.client-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.client-name {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.client-bssid {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+}
+
+.client-count {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.client-time {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+}
+
+.empty {
+  padding: 2rem;
+  text-align: center;
+  color: var(--text-dim);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}

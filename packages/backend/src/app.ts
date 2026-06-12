@@ -3,6 +3,7 @@ import cors from '@fastify/cors';
 import { infrastructureRoutes } from './routes/infrastructure.js';
 import { scoreRoutes } from './routes/scores.js';
 import { telemetryRoutes } from './routes/telemetry.js';
+import { clientRoutes } from './routes/clients.js';
 
 export async function buildApp(): Promise<FastifyInstance> {
   const app = Fastify({ logger: true });
@@ -14,6 +15,7 @@ export async function buildApp(): Promise<FastifyInstance> {
   await app.register(infrastructureRoutes, { prefix: '/api/infrastructure' });
   await app.register(scoreRoutes, { prefix: '/api/scores' });
   await app.register(telemetryRoutes, { prefix: '/api/telemetry' });
+  await app.register(clientRoutes, { prefix: '/api/clients' });
 
   return app;
 }

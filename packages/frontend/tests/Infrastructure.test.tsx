@@ -26,7 +26,7 @@ describe('InfrastructurePage', () => {
 
   it('renders list of infrastructure items', async () => {
     vi.mocked(client.fetchInfrastructure).mockResolvedValue([
-      { id: 1, bssid: 'AA:BB:CC:DD:EE:01', ssid: 'Office', label: 'Main AP', band: '5GHz', notes: '', createdAt: '', updatedAt: '' },
+      { id: 1, bssid: 'AA:BB:CC:DD:EE:01', ssid: 'Office', label: 'Main AP', band: '5GHz', notes: '', ipAddress: null, supportsSnmp: false, snmpOid: null, snmpCommunity: null, createdAt: '', updatedAt: '' },
     ]);
 
     render(<InfrastructurePage />);
@@ -40,7 +40,7 @@ describe('InfrastructurePage', () => {
   it('calls deleteInfrastructure when delete clicked', async () => {
     const mockDelete = vi.mocked(client.deleteInfrastructure).mockResolvedValue();
     vi.mocked(client.fetchInfrastructure).mockResolvedValue([
-      { id: 1, bssid: 'AA:BB:CC:DD:EE:01', ssid: 'Office', label: '', band: '', notes: '', createdAt: '', updatedAt: '' },
+      { id: 1, bssid: 'AA:BB:CC:DD:EE:01', ssid: 'Office', label: '', band: '', notes: '', ipAddress: null, supportsSnmp: false, snmpOid: null, snmpCommunity: null, createdAt: '', updatedAt: '' },
     ]);
 
     render(<InfrastructurePage />);
