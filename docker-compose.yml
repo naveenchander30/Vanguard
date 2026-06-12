@@ -1,0 +1,38 @@
+services:
+  kismet:
+    image: kismet/kismet:latest
+    network_mode: host
+    privileged: true
+    volumes:
+      - kismet_data:/opt/kismet
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: .
+      dockerfile: packages/backend/Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=file:/data/spectrum.db
+      - NODE_ENV=production
+    volumes:
+      - backend_data:/data
+    depends_on:
+      kismet:
+        condition: service_started
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: .
+      dockerfile: packages/frontend/Dockerfile
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  kismet_data:
+  backend_data:
