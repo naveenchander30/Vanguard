@@ -21,7 +21,12 @@ export async function scoreRoutes(app: FastifyInstance): Promise<void> {
 
     const prisma = getPrisma();
 
-    const sendScores = async () => {
+    let closed = false;
+    let polling = false;
+
+    async function poll() {
+      if (polling || closed) return;
+      polling = true;
       try {
         const scores = await prisma.congestionScore.findMany({
           orderBy: [{ channel: 'asc' }, { band: 'asc' }],
@@ -30,15 +35,16 @@ export async function scoreRoutes(app: FastifyInstance): Promise<void> {
         reply.raw.write(`data: ${JSON.stringify(scores)}\n\n`);
       } catch {
         reply.raw.write(`data: []\n\n`);
+      } finally {
+        polling = false;
+        if (!closed) setTimeout(poll, 5000);
       }
-    };
+    }
 
-    await sendScores();
-
-    const interval = setInterval(sendScores, 5000);
+    await poll();
 
     _request.raw.on('close', () => {
-      clearInterval(interval);
+      closed = true;
     });
   });
 }

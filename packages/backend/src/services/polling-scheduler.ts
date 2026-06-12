@@ -16,7 +16,7 @@ export interface PollingScheduler {
 }
 
 export function createPollingScheduler(config: SchedulerConfig): PollingScheduler {
-  const timers: ReturnType<typeof setInterval>[] = [];
+  const timers: ReturnType<typeof setTimeout>[] = [];
 
   async function pollKismet(): Promise<void> {
     if (!config.kismetPoller) return;
@@ -44,18 +44,28 @@ export function createPollingScheduler(config: SchedulerConfig): PollingSchedule
     }
   }
 
+  async function scheduleKismet() {
+    await pollKismet();
+    timers.push(setTimeout(scheduleKismet, config.kismetIntervalMs));
+  }
+
+  async function scheduleSnmp() {
+    await pollSnmpRouters();
+    timers.push(setTimeout(scheduleSnmp, config.snmpIntervalMs));
+  }
+
   return {
     async start() {
       await pollKismet();
       await pollSnmpRouters();
 
-      timers.push(setInterval(pollKismet, config.kismetIntervalMs));
-      timers.push(setInterval(pollSnmpRouters, config.snmpIntervalMs));
+      timers.push(setTimeout(scheduleKismet, config.kismetIntervalMs));
+      timers.push(setTimeout(scheduleSnmp, config.snmpIntervalMs));
     },
 
     async stop() {
       for (const timer of timers) {
-        clearInterval(timer);
+        clearTimeout(timer);
       }
       timers.length = 0;
     },

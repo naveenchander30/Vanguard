@@ -11,11 +11,11 @@ services:
     build:
       context: .
       dockerfile: packages/backend/Dockerfile
-    ports:
-      - "3000:3000"
+    network_mode: host
     environment:
       - DATABASE_URL=file:/data/spectrum.db
       - NODE_ENV=production
+      - KISMET_URL=http://localhost:2501
     volumes:
       - backend_data:/data
     depends_on:

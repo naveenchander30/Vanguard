@@ -14,6 +14,7 @@ export interface BssidMapping {
   bssid: string;
   label: string;
   band?: string;
+  channel?: string;
   clientOid?: string;
   utilizationOid?: string;
   noiseOid?: string;
@@ -60,7 +61,7 @@ export function createSnmpPoller(transport: SnmpTransport) {
         bssid: mapping.bssid,
         ssid: mapping.label,
         band: mapping.band || 'unknown',
-        channel: '',
+        channel: mapping.channel || '',
         source: 'snmp',
       };
 

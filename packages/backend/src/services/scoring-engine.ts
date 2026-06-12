@@ -14,11 +14,23 @@ interface Breakdown {
   adjacent: number;
 }
 
+const UNKNOWN_CHANNEL = -1;
 const ADJACENT_2GHZ_WINDOW = 2;
+const ADJACENT_5GHZ_WINDOW = 4;
+const ADJACENT_6GHZ_WINDOW = 4;
 
 function isAdjacentChannel(a: number, b: number, band: string): boolean {
+  const diff = Math.abs(a - b);
+  if (diff === 0) return false;
+
   if (band === '2.4GHz') {
-    return Math.abs(a - b) > 0 && Math.abs(a - b) <= ADJACENT_2GHZ_WINDOW;
+    return diff <= ADJACENT_2GHZ_WINDOW;
+  }
+  if (band === '5GHz') {
+    return diff <= ADJACENT_5GHZ_WINDOW;
+  }
+  if (band === '6GHz') {
+    return diff <= ADJACENT_6GHZ_WINDOW;
   }
   return false;
 }
@@ -35,12 +47,12 @@ export function calculateScores(
 
   for (const entry of entries) {
     const ch = parseInt(entry.channel, 10);
-    if (isNaN(ch)) continue;
+    const channel = isNaN(ch) ? UNKNOWN_CHANNEL : ch;
 
-    const key = `${entry.band}:${ch}`;
+    const key = `${entry.band}:${channel}`;
     if (!groups.has(key)) {
       groups.set(key, []);
-      channelMap.set(key, ch);
+      channelMap.set(key, channel);
       bandMap.set(key, entry.band);
     }
     groups.get(key)!.push(entry);
@@ -94,21 +106,19 @@ export function calculateScores(
     breakdown.hardware = Math.round(maxClients / 5 + maxUtilization / 10);
     breakdown.hardware = Math.min(breakdown.hardware, 20);
 
-    // Adjacent Interference (0-20): 2.4GHz only, strong signals on ±2 channels
-    if (band === '2.4GHz') {
-      for (const [otherKey, otherGroup] of groups) {
-        const otherCh = channelMap.get(otherKey)!;
-        if (!isAdjacentChannel(ch, otherCh, band)) continue;
+    // Adjacent Interference (0-20): strong signals on nearby channels
+    for (const [otherKey, otherGroup] of groups) {
+      const otherCh = channelMap.get(otherKey)!;
+      if (!isAdjacentChannel(ch, otherCh, band)) continue;
 
-        for (const entry of otherGroup) {
-          if (knownSet.has(entry.bssid)) continue;
-          if (entry.signalDb != null && entry.signalDb > -65) {
-            breakdown.adjacent += 5;
-          }
+      for (const entry of otherGroup) {
+        if (knownSet.has(entry.bssid)) continue;
+        if (entry.signalDb != null && entry.signalDb > -65) {
+          breakdown.adjacent += 5;
         }
       }
-      breakdown.adjacent = Math.min(breakdown.adjacent, 20);
     }
+    breakdown.adjacent = Math.min(breakdown.adjacent, 20);
 
     const total = Math.min(
       Math.max(breakdown.external + breakdown['co-channel'] + breakdown.hardware + breakdown.adjacent, 0),

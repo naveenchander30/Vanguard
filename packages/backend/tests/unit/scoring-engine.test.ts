@@ -132,4 +132,30 @@ describe('Scoring Engine', () => {
     expect(result[0].band).toBe('6GHz');
     expect(result[0].score).toBeGreaterThan(0);
   });
+
+  it('should score SNMP telemetry with empty channel under unknown group', () => {
+    const entries = [
+      telem({ bssid: 'AA:BB:CC:DD:EE:01', band: '5GHz', channel: '', clientCount: 10, channelUtilization: 50, source: 'snmp' }),
+    ];
+    const knownBssids = ['AA:BB:CC:DD:EE:01'];
+    const result = calculateScores(entries, knownBssids);
+    expect(result).toHaveLength(1);
+    expect(result[0].channel).toBe(-1);
+    expect(result[0].breakdown).toContain('hardware');
+    expect(result[0].score).toBeGreaterThan(0);
+  });
+
+  it('should penalize adjacent channel interference in 5GHz', () => {
+    const entries = [
+      telem({ bssid: 'AA:BB:CC:DD:01', band: '5GHz', channel: '36', signalDb: -75 }),
+      telem({ bssid: 'AA:BB:CC:DD:02', band: '5GHz', channel: '34', signalDb: -60 }),
+      telem({ bssid: 'AA:BB:CC:DD:03', band: '5GHz', channel: '38', signalDb: -55 }),
+    ];
+    const knownBssids = ['AA:BB:CC:DD:01'];
+    const result = calculateScores(entries, knownBssids);
+    const ch36Result = result.find((r) => r.channel === 36);
+    expect(ch36Result).toBeDefined();
+    expect(ch36Result!.score).toBeGreaterThan(0);
+    expect(ch36Result!.breakdown).toContain('adjacent');
+  });
 });
