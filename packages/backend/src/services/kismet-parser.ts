@@ -33,6 +33,7 @@ export interface ParsedTelemetry {
   maxSignalDb?: number;
   channelUtilization?: number;
   clientCount?: number;
+  noiseFloor?: number;
   txPackets?: number;
   rxPackets?: number;
   source: string;
