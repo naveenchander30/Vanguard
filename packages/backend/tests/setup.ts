@@ -8,7 +8,7 @@ let prisma: PrismaClient;
 
 beforeAll(() => {
   process.env.DATABASE_URL = TEST_DB_URL;
-  execSync('npx prisma db push --force-reset --skip-generate', {
+  execSync('./node_modules/.bin/prisma db push --force-reset --skip-generate', {
     env: { ...process.env, DATABASE_URL: TEST_DB_URL },
     cwd: __dirname + '/..',
   });

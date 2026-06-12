@@ -107,14 +107,16 @@ export async function fetchClients(): Promise<ClientLoad[]> {
   return res.json();
 }
 
-function subscribe<T>(url: string, onData: (data: T) => void, retryMs = 3000): () => void {
+function subscribe<T>(url: string, onData: (data: T) => void, retryMs = 1000): () => void {
   let closed = false;
   let retryTimeout: ReturnType<typeof setTimeout>;
+  let currentRetry = retryMs;
 
   function connect() {
     if (closed) return;
     const eventSource = new EventSource(url);
     eventSource.onmessage = (event) => {
+      currentRetry = retryMs;
       try {
         const data = JSON.parse(event.data);
         onData(data);
@@ -125,7 +127,8 @@ function subscribe<T>(url: string, onData: (data: T) => void, retryMs = 3000): (
     eventSource.onerror = () => {
       eventSource.close();
       if (!closed) {
-        retryTimeout = setTimeout(connect, retryMs);
+        retryTimeout = setTimeout(connect, currentRetry);
+        currentRetry = Math.min(currentRetry * 1.5, 30000);
       }
     };
   }

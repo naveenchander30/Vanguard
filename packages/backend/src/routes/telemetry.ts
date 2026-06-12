@@ -11,6 +11,12 @@ export async function telemetryRoutes(app: FastifyInstance): Promise<void> {
     return reply.send(entries);
   });
 
+  app.delete('/', async (_request: FastifyRequest, reply: FastifyReply) => {
+    const prisma = getPrisma();
+    await prisma.telemetryLog.deleteMany();
+    return reply.status(204).send();
+  });
+
   app.get('/export', async (_request: FastifyRequest, reply: FastifyReply) => {
     const prisma = getPrisma();
     const entries = await prisma.telemetryLog.findMany({
@@ -27,16 +33,18 @@ export async function telemetryRoutes(app: FastifyInstance): Promise<void> {
 
     const csvRows: string[] = [headers.join(',')];
 
+    function escapeCsv(val: unknown): string {
+      if (val == null) return '';
+      const str = String(val);
+      const sanitized = /^[=+\-@]/.test(str) ? `'${str}` : str;
+      if (sanitized.includes(',') || sanitized.includes('"') || sanitized.includes('\n')) {
+        return `"${sanitized.replace(/"/g, '""')}"`;
+      }
+      return sanitized;
+    }
+
     for (const e of entries) {
-      const row = headers.map((h) => {
-        const val = (e as Record<string, unknown>)[h];
-        if (val == null) return '';
-        const str = String(val);
-        if (str.includes(',') || str.includes('"') || str.includes('\n')) {
-          return `"${str.replace(/"/g, '""')}"`;
-        }
-        return str;
-      });
+      const row = headers.map((h) => escapeCsv((e as Record<string, unknown>)[h]));
       csvRows.push(row.join(','));
     }
 

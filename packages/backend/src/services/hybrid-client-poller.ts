@@ -7,6 +7,7 @@ const ACTIVE_WINDOW_MS = 60_000;
 export interface ClientLoadReport {
   bssid: string;
   name: string;
+  band: string | null;
   activeClientCount: number;
   source: 'snmp' | 'kismet';
   clients: ConnectedClient[];
@@ -22,6 +23,7 @@ export interface ConnectedClient {
 export interface ApConfig {
   bssid: string;
   label: string;
+  band: string | null;
   ipAddress: string | null;
   supportsSnmp: boolean;
   snmpOid: string | null;
@@ -105,17 +107,17 @@ export async function pollClientLoads(
           results.push({
             bssid: ap.bssid,
             name: ap.label,
+            band: ap.band,
             activeClientCount: val,
             source: 'snmp',
             clients: [],
           });
-          await transport.close();
           continue;
         }
-        await transport.close();
       } catch (err) {
-        await transport.close();
         console.error(`SNMP poll failed for ${ap.label}, falling back to Kismet:`, err);
+      } finally {
+        try { await transport.close(); } catch {}
       }
     }
 
@@ -124,6 +126,7 @@ export async function pollClientLoads(
     results.push({
       bssid: ap.bssid,
       name: ap.label,
+      band: ap.band,
       activeClientCount: clients.length,
       source: 'kismet',
       clients,

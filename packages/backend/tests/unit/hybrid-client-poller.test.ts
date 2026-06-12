@@ -36,8 +36,8 @@ const mockDevices = [
 ];
 
 const aps: ApConfig[] = [
-  { bssid: 'AA:BB:CC:DD:EE:01', label: 'AP-One', ipAddress: null, supportsSnmp: false, snmpOid: null, snmpCommunity: null },
-  { bssid: 'AA:BB:CC:DD:EE:02', label: 'AP-Two', ipAddress: null, supportsSnmp: false, snmpOid: null, snmpCommunity: null },
+  { bssid: 'AA:BB:CC:DD:EE:01', label: 'AP-One', band: null, ipAddress: null, supportsSnmp: false, snmpOid: null, snmpCommunity: null },
+  { bssid: 'AA:BB:CC:DD:EE:02', label: 'AP-Two', band: null, ipAddress: null, supportsSnmp: false, snmpOid: null, snmpCommunity: null },
 ];
 
 describe('Hybrid Client Poller', () => {
@@ -95,7 +95,7 @@ describe('Hybrid Client Poller', () => {
     };
 
     const snmpAps: ApConfig[] = [
-      { bssid: 'AA:BB:CC:DD:EE:01', label: 'AP-SNMP', ipAddress: '192.168.1.1', supportsSnmp: true, snmpOid: '.1.3.6.1.2.1.2.2.1.10.1', snmpCommunity: 'public' },
+      { bssid: 'AA:BB:CC:DD:EE:01', label: 'AP-SNMP', band: null, ipAddress: '192.168.1.1', supportsSnmp: true, snmpOid: '.1.3.6.1.2.1.2.2.1.10.1', snmpCommunity: 'public' },
     ];
 
     const results = await pollClientLoads(snmpAps, { kismetUrl: 'http://kismet:2501', createSnmpTransport: () => snmpTransport });
@@ -121,7 +121,7 @@ describe('Hybrid Client Poller', () => {
     } as Response);
 
     const snmpAps: ApConfig[] = [
-      { bssid: 'AA:BB:CC:DD:EE:01', label: 'AP-Fallback', ipAddress: '192.168.1.1', supportsSnmp: true, snmpOid: '.1.3.6.1.2.1.2.2.1.10.1', snmpCommunity: 'public' },
+      { bssid: 'AA:BB:CC:DD:EE:01', label: 'AP-Fallback', band: null, ipAddress: '192.168.1.1', supportsSnmp: true, snmpOid: '.1.3.6.1.2.1.2.2.1.10.1', snmpCommunity: 'public' },
     ];
 
     const results = await pollClientLoads(snmpAps, { kismetUrl: 'http://kismet:2501', createSnmpTransport: () => snmpTransport });
@@ -155,8 +155,8 @@ describe('Hybrid Client Poller', () => {
     };
 
     const snmpAps: ApConfig[] = [
-      { bssid: 'AA:BB:CC:DD:EE:01', label: 'AP-1', ipAddress: '192.168.1.1', supportsSnmp: true, snmpOid: '.1.3.6.1.2.1.2.2.1.10.1', snmpCommunity: 'public' },
-      { bssid: 'AA:BB:CC:DD:EE:02', label: 'AP-2', ipAddress: '192.168.1.2', supportsSnmp: true, snmpOid: '.1.3.6.1.2.1.2.2.1.10.2', snmpCommunity: 'public' },
+      { bssid: 'AA:BB:CC:DD:EE:01', label: 'AP-1', band: null, ipAddress: '192.168.1.1', supportsSnmp: true, snmpOid: '.1.3.6.1.2.1.2.2.1.10.1', snmpCommunity: 'public' },
+      { bssid: 'AA:BB:CC:DD:EE:02', label: 'AP-2', band: null, ipAddress: '192.168.1.2', supportsSnmp: true, snmpOid: '.1.3.6.1.2.1.2.2.1.10.2', snmpCommunity: 'public' },
     ];
 
     await pollClientLoads(snmpAps, { kismetUrl: 'http://kismet:2501', createSnmpTransport: () => snmpTransport });

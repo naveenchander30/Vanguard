@@ -9,6 +9,10 @@ const createSchema = z.object({
   label: z.string().optional().nullable(),
   band: z.string().optional().nullable(),
   notes: z.string().optional().nullable(),
+  ipAddress: z.string().optional().nullable(),
+  supportsSnmp: z.boolean().optional().default(false),
+  snmpOid: z.string().optional().nullable(),
+  snmpCommunity: z.string().optional().nullable(),
 });
 
 const updateSchema = z.object({
@@ -16,6 +20,10 @@ const updateSchema = z.object({
   label: z.string().optional().nullable(),
   band: z.string().optional().nullable(),
   notes: z.string().optional().nullable(),
+  ipAddress: z.string().optional().nullable(),
+  supportsSnmp: z.boolean().optional(),
+  snmpOid: z.string().optional().nullable(),
+  snmpCommunity: z.string().optional().nullable(),
 });
 
 export async function infrastructureRoutes(app: FastifyInstance): Promise<void> {

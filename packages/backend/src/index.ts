@@ -33,6 +33,7 @@ async function main() {
         aps.map((ap) => ({
           bssid: ap.bssid,
           label: ap.label || ap.ssid || '',
+          band: ap.band,
           ipAddress: ap.ipAddress,
           supportsSnmp: ap.supportsSnmp,
           snmpOid: ap.snmpOid,
@@ -43,6 +44,7 @@ async function main() {
       return reports.map((r) => ({
         bssid: r.bssid,
         name: r.name,
+        band: r.band,
         activeClientCount: r.activeClientCount,
         source: r.source,
       }));

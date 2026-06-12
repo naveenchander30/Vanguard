@@ -4,6 +4,7 @@ import type { RouterConfig, SnmpPollResult } from './snmp-poller.js';
 interface HybridResult {
   bssid: string;
   name: string;
+  band: string | null;
   activeClientCount: number;
   source: 'snmp' | 'kismet';
 }
@@ -60,7 +61,7 @@ export function createPollingScheduler(config: SchedulerConfig): PollingSchedule
       const telemetry: ParsedTelemetry[] = reports.map((r) => ({
         bssid: r.bssid,
         ssid: r.name,
-        band: '',
+        band: r.band || '',
         channel: '',
         clientCount: r.activeClientCount,
         source: r.source,
