@@ -38,7 +38,7 @@ model TelemetryLog {
   source             String
   createdAt          DateTime @default(now())
 
-  @@index([bssid, createdAt])
+  @@unique([bssid, createdAt])
   @@index([createdAt])
 }
 
