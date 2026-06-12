@@ -279,6 +279,21 @@ th {
   background: var(--success);
 }
 
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text);
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.checkbox-label input[type="checkbox"] {
+  width: 1rem;
+  height: 1rem;
+  cursor: pointer;
+}
+
 .actions-cell {
   display: flex;
   gap: 0.375rem;
