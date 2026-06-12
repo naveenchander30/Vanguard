@@ -1,7 +1,7 @@
 import type { ParsedTelemetry } from './kismet-parser.js';
 import type { RouterConfig, SnmpPollResult } from './snmp-poller.js';
 
-export interface ClientLoadReport {
+interface HybridResult {
   bssid: string;
   name: string;
   activeClientCount: number;
@@ -15,7 +15,7 @@ export interface SchedulerConfig {
   kismetPoller?: () => Promise<ParsedTelemetry[]>;
   snmpPoller?: (config: RouterConfig) => Promise<SnmpPollResult>;
   routerConfigs?: RouterConfig[];
-  hybridPoller?: () => Promise<ClientLoadReport[]>;
+  hybridPoller?: () => Promise<HybridResult[]>;
   storeTelemetry: (entries: ParsedTelemetry[]) => Promise<void>;
 }
 
