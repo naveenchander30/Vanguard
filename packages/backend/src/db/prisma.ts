@@ -4,7 +4,9 @@ let prisma: PrismaClient;
 
 export function getPrisma(): PrismaClient {
   if (!prisma) {
-    prisma = new PrismaClient();
+    const dbUrl = process.env.DATABASE_URL || 'file:./dev.db';
+    const url = dbUrl.includes('?') ? dbUrl : `${dbUrl}?journal_mode=WAL`;
+    prisma = new PrismaClient({ datasources: { db: { url } } });
   }
   return prisma;
 }

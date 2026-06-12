@@ -13,8 +13,12 @@ model KnownInfrastructure {
   ssid      String?
   label     String?
   band      String?
-  notes     String?
-  createdAt DateTime @default(now())
+  notes         String?
+  ipAddress     String?
+  supportsSnmp  Boolean  @default(false)
+  snmpOid       String?
+  snmpCommunity String?
+  createdAt     DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
